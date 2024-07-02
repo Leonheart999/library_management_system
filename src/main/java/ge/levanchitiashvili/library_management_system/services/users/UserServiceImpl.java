@@ -9,8 +9,8 @@ import ge.levanchitiashvili.library_management_system.models.security.UserAuthor
 import ge.levanchitiashvili.library_management_system.repositories.jpa.authorities.UserAuthorityJpaRepository;
 import ge.levanchitiashvili.library_management_system.repositories.jpa.users.UserJPARepository;
 import ge.levanchitiashvili.library_management_system.requests.security.RegisterRequest;
+import ge.levanchitiashvili.library_management_system.requests.users.UserEditRequest;
 import ge.levanchitiashvili.library_management_system.services.authorities.AuthorityService;
-import ge.levanchitiashvili.library_management_system.services.books.BookService;
 import ge.levanchitiashvili.library_management_system.services.security.SecurityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -28,7 +28,6 @@ public class UserServiceImpl extends EntityToDtoConverter<User, UserDTO> impleme
     private final SecurityService securityService;
     private final AuthorityService authorityService;
     private final UserAuthorityJpaRepository userAuthorityRepository;
-    private final BookService bookService;
 
     @Override
     public User get(long id) {
@@ -64,11 +63,10 @@ public class UserServiceImpl extends EntityToDtoConverter<User, UserDTO> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User edit(long id, User user) {
+    public User edit(long id, UserEditRequest userEditRequest) {
         User oldUser = get(id);
-        user.setId(id);
-        user.setPassword(oldUser.getPassword());
-        return save(user);
+        oldUser.setUsername(userEditRequest.getUsername());
+        return save(oldUser);
     }
 
 
@@ -114,6 +112,13 @@ public class UserServiceImpl extends EntityToDtoConverter<User, UserDTO> impleme
         user.setPassword(registerRequest.getPassword());
         user.setUsername(registerRequest.getUserName());
         addNew(user);
+    }
+
+    private void validateUser(User user){
+        Optional<User> checker=userRepository.findByUsernameAndActiveTrue(user.getUsername());
+        if(checker.isPresent() && (user.getId()==null || !checker.get().getId().equals(user.getId()))){
+            throw new RuntimeException("User with username " + user.getUsername() + " already exists");
+        }
     }
 
 }

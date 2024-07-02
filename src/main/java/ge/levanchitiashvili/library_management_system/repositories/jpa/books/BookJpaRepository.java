@@ -4,11 +4,15 @@ import ge.levanchitiashvili.library_management_system.config.BaseRepository;
 import ge.levanchitiashvili.library_management_system.models.books.Book;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BookJpaRepository extends BaseRepository<Book,Long> {
-    Book findBookByTitleAndActiveTrue(String title);
 
 
-    Book findBookByIsbnAndActiveTrue(String isbn);
+    Optional<Book>  findBookByTitleAndActiveTrue(String title);
+
+
+    Optional<Book>  findBookByIsbnAndActiveTrue(String isbn);
 
 }

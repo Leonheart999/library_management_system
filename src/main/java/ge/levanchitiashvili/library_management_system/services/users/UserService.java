@@ -4,6 +4,7 @@ package ge.levanchitiashvili.library_management_system.services.users;
 import ge.levanchitiashvili.library_management_system.dtos.security.UserDTO;
 import ge.levanchitiashvili.library_management_system.models.security.User;
 import ge.levanchitiashvili.library_management_system.requests.security.RegisterRequest;
+import ge.levanchitiashvili.library_management_system.requests.users.UserEditRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface UserService {
 
     User save(User user);
 
-    User edit(long id,User user);
+    User edit(long id, UserEditRequest userEditRequest);
 
 
     void addNew(User user);

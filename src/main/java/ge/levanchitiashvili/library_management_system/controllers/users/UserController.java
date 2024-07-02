@@ -1,10 +1,11 @@
 package ge.levanchitiashvili.library_management_system.controllers.users;
 
 
-import ge.levanchitiashvili.library_management_system.dtos.books.BookDTO;
+
 import ge.levanchitiashvili.library_management_system.dtos.security.UserDTO;
-import ge.levanchitiashvili.library_management_system.models.security.User;
+import ge.levanchitiashvili.library_management_system.requests.users.UserEditRequest;
 import ge.levanchitiashvili.library_management_system.services.users.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,8 @@ public class UserController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public UserDTO edit(@PathVariable long id, @RequestBody User user) {
-        return userService.ENTITY_DTO(userService.edit(id, user));
+    public UserDTO edit(@PathVariable long id, @Valid @RequestBody UserEditRequest userEditRequest) {
+        return userService.ENTITY_DTO(userService.edit(id, userEditRequest));
     }
 
     @PostMapping("{id}/authority")

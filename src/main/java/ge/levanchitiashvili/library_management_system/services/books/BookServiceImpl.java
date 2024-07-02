@@ -16,6 +16,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -98,7 +99,7 @@ public class BookServiceImpl extends EntityToDtoConverter<Book, BookDTO> impleme
     public Book borrow(long id) {
         long userId = SecurityService.getCurrentUserId();
         Book book = get(id);
-        if (book.getStatus().equals( Book.Status.BORROWED)) {
+        if (book.getStatus().equals(Book.Status.BORROWED)) {
             if (userId == book.getUserId()) {
                 throw new RuntimeException("Book with id " + id + " is already borrowed by current user");
             }
@@ -131,17 +132,20 @@ public class BookServiceImpl extends EntityToDtoConverter<Book, BookDTO> impleme
         return book;
     }
 
-    private void validateBook(Book book){
-        Book checker=bookJpaRepository.findBookByTitleAndActiveTrue(book.getTitle());
-        if(book.getId()==null || !checker.getId().equals(book.getId())){
-            throw new RuntimeException("Book with title " + book.getTitle() + " already exists");
-        }
+    private void validateBook(Book book) {
+        Optional<Book> checker = bookJpaRepository.findBookByTitleAndActiveTrue(book.getTitle());
+        if (checker.isPresent()) {
+            if (book.getId() == null || !checker.get().getId().equals(book.getId())) {
+                throw new RuntimeException("Book with title " + book.getTitle() + " already exists");
+            }
 
-        checker=bookJpaRepository.findBookByIsbnAndActiveTrue(book.getIsbn());
-        if(book.getId()==null || !checker.getId().equals(book.getId())){
-            throw new RuntimeException("Book with ISBN " + book.getIsbn() + " already exists");
+            checker = bookJpaRepository.findBookByIsbnAndActiveTrue(book.getIsbn());
+            if (book.getId() == null || !checker.get().getId().equals(book.getId())) {
+                throw new RuntimeException("Book with ISBN " + book.getIsbn() + " already exists");
+            }
         }
     }
+
     private Book save(Book book) {
         return bookJpaRepository.save(book);
     }
