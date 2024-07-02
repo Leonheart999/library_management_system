@@ -1,0 +1,26 @@
+version: "3"
+services:
+  postgres_library_management_system:
+    container_name: postgres_library_management_system
+    restart: always
+    image: library_management_system/postgres
+    build: ./postgres
+    ports:
+      - "5435:5432"
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "5"
+
+  activemq_library_management_system:
+    image: rmohr/activemq
+    container_name: activemq
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+    volumes:
+      - ./data:/data
